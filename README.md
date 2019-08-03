@@ -19,7 +19,7 @@ Wrap up this simplicity in a way that is designed to be deployed on a RaspberryP
 You'll need a Raspberry Pi running Rasbian.
 
 From the Pi, do this:
- 1. wget https://github.com/mattymcfatty/HoneyPi/archive/master.zip
+ 1. wget https://github.com/Saiyato/HoneyPi/archive/master.zip
  2. unzip master.zip
  3. cd HoneyPi-master
  4. chmod +x *.sh
