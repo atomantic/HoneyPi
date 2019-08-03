@@ -39,11 +39,10 @@ echo "127.0.0.1 $sneakyname" >> /etc/hosts
 
 ####Install PSAD ###
 whiptail --infobox "Installing a bunch of software like the log monitoring service and other dependencies...\n" 20 60
-apt-get -y install psad msmtp s-nail msmtp-mta python-twisted iptables-persistent libnotify-bin fwsnort raspberrypi-kernel-headers -y
+#apt-get -y install psad msmtp s-nail msmtp-mta python-twisted iptables-persistent libnotify-bin fwsnort raspberrypi-kernel-headers -y
 
 ###Choose Notification Option###
-OPTION=$(whiptail --menu "Choose how you want to get notified:" 20 60 5 "[email]" "Send me an email" "[script]" "Execute a script" "[gpio]" "Switch GPIO to high on Raspberry Pi" 3>&2 2>&1 1>&3)
-emailaddy=test@example.com
+OPTION=$(whiptail --menu "Choose how you want to get notified:" 20 60 5 "email" "Send me an email" "script" "Execute a script" "gpio" "Switch GPIO to high on Raspberry Pi" 3>&2 2>&1 1>&3)
 enablescript=N
 externalscript=/bin/true
 alertingmethod=ALL
@@ -60,12 +59,14 @@ case $OPTION in
 			sed -i "s/xfromx/$emailaddress/g" /etc/msmtprc
 			
 			whiptail --msgbox "Now, create an 'App Password' for your gmail account (google it if you don't know how). Because we don't want to assign your password to any variables, you have to manually edit the smtp configuration file on the next screen. 'AuthUser' is the first part of your email address before the @. Save and exit the editor and I'll see you back here." 20 60			
-			pico /etc/msmtprc			
+			pico /etc/msmtprc
 			
 			whiptail --msgbox "Welcome back! Trying to send a test email, this shouldn't take long..." 20 60			
-			echo "hello there username." | msmtp -a default $emailaddress
+			echo "Test email from your honeypot." | msmtp -a default $emailaddress
 			
-			if whiptail --msgbox "If you've received the mail, great, if not you should check /etc/msmtprc and fiddle around with the settings to make it work." 20 60
+			whiptail --msgbox "If you've received the mail, great, if not you should check /etc/msmtprc and fiddle around with the settings to make it work." 20 60
+		else
+			emailaddress=root@localhost.com
 		fi
 	;;
 	script)
@@ -80,27 +81,34 @@ case $OPTION in
 	;;
 esac
 
-###update vars in configuration files
-sed -i "s/xhostnamex/$sneakyname/g" psad.conf
-sed -i "s/xemailx/$emailaddress/g" psad.conf
-sed -i "s/xenablescriptx/$enablescript/g" psad.conf
-sed -i "s/xalertingmethodx/$alertingmethod/g" psad.conf
-sed -i "s=xexternalscriptx=$externalscript=g" psad.conf
-sed -i "s/xcheckx/$check/g" psad.conf
+# Setup PSAD
+whiptail --msgbox "Setting up PSAD with notification preferences." 20 60
+cp psad.conf /etc/psad/psad.conf
+sed -i "s/xhostnamex/$sneakyname/g" /etc/psad/psad.conf
+sed -i "s/xemailaddressx/$emailaddress/g" /etc/psad/psad.conf
+sed -i "s/xenablescriptx/$enablescript/g" /etc/psad/psad.conf
+sed -i "s/xalertingmethodx/$alertingmethod/g" /etc/psad/psad.conf
+sed -i "s=xexternalscriptx=$externalscript=g" /etc/psad/psad.conf
+sed -i "s/xcheckx/$check/g" /etc/psad/psad.conf
 
 
-###Wrap up everything and exit
-whiptail --msgbox "Configuration files created. Next we will move those files to the right places." 20 60
+# Finalise installation
+whiptail --msgbox "Placing scripts in the right directories." 20 60
 mkdir /root/honeyPi
 cp gpio*.* /root/honeyPi
-cp psad.conf /etc/psad/psad.conf
+
+# Setting up iptables
 iptables --flush
 # Disable IGMP flooding
 iptables -A INPUT -p igmp -j DROP
 iptables -A INPUT -j LOG
 iptables -A FORWARD -j LOG
+
+# Configuring netfilter
 service netfilter-persistent save
 service netfilter-persistent restart
+
+# Starting necessary binaries
 psad --sig-update
 service psad restart
 cp mattshoneypot.py /root/honeyPi
