@@ -104,6 +104,9 @@ iptables -A INPUT -p igmp -j DROP
 iptables -A INPUT -j LOG
 iptables -A FORWARD -j LOG
 
+ip6tables -A INPUT -j LOG
+ip6tables -A FORWARD -j LOG
+
 # Configuring netfilter
 service netfilter-persistent save
 service netfilter-persistent restart
