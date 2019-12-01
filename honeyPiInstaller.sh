@@ -39,7 +39,7 @@ echo "127.0.0.1 $sneakyname" >> /etc/hosts
 
 ####Install PSAD ###
 whiptail --infobox "Installing a bunch of software like the log monitoring service and other dependencies...\n" 20 60
-#apt-get -y install psad msmtp s-nail msmtp-mta python-twisted iptables-persistent libnotify-bin fwsnort raspberrypi-kernel-headers -y
+apt-get -y install psad msmtp s-nail msmtp-mta python-twisted iptables-persistent libnotify-bin fwsnort raspberrypi-kernel-headers -y
 
 ###Choose Notification Option###
 OPTION=$(whiptail --menu "Choose how you want to get notified:" 20 60 5 "email" "Send me an email" "script" "Execute a script" "gpio" "Switch GPIO to high on Raspberry Pi" 3>&2 2>&1 1>&3)

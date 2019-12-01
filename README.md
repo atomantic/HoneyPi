@@ -1,3 +1,5 @@
+> Note: this is a fork of the original @mattymcfatty [HoneyPi](https://github.com/mattymcfatty/HoneyPi) with additions by @Saiyato to replace ssmtp with msmtp
+
 # HoneyPi
 
 It is astonishingly easy as an attacker to move around on most networks undetected. Let's face it, unless your organization is big enough to have full packet capture with some expensive IDS, you will likely have no idea if there is an attacker on your network. What are the options for home users and small businesses? 
@@ -19,7 +21,7 @@ Wrap up this simplicity in a way that is designed to be deployed on a RaspberryP
 You'll need a Raspberry Pi running Rasbian.
 
 From the Pi, do this:
- 1. wget https://github.com/Saiyato/HoneyPi/archive/master.zip
+ 1. wget https://github.com/atomantic/HoneyPi/archive/master.zip
  2. unzip master.zip
  3. cd HoneyPi-master
  4. chmod +x *.sh
